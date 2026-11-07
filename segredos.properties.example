@@ -1,0 +1,7 @@
+# Copie para "segredos.properties" (na raiz do projeto) e preencha. Nao versionar.
+spring.datasource.password=
+spring.mail.username=
+spring.mail.password=
+jwt.secret=
+spring.security.oauth2.client.registration.google.client-id=
+spring.security.oauth2.client.registration.google.client-secret=

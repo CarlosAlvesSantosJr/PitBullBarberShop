@@ -1,0 +1,37 @@
+# Sobe o app + Postgres só com Docker:  docker compose up -d --build
+# Antes: copie .env.example para .env e preencha.
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: barbearia
+      POSTGRES_USER: barbearia
+      POSTGRES_PASSWORD: ${DB_SENHA:?defina DB_SENHA no .env}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U barbearia -d barbearia"]
+      interval: 5s
+      retries: 10
+
+  app:
+    build: .
+    image: pitbull-barber:1.3
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "${APP_PORTA:-8090}:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/barbearia
+      SPRING_DATASOURCE_USERNAME: barbearia
+      SPRING_DATASOURCE_PASSWORD: ${DB_SENHA}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-desativado}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-desativado}
+      ADMIN_SENHA: ${ADMIN_SENHA:?defina ADMIN_SENHA no .env}
+      MAIL_USUARIO: ${MAIL_USUARIO:-}
+      MAIL_SENHA: ${MAIL_SENHA:-}
+    restart: unless-stopped
+
+volumes:
+  pgdata:

@@ -1,79 +1,52 @@
 package com.barbearia.agendamento.config;
 
-import com.barbearia.agendamento.model.Cliente;
-import com.barbearia.agendamento.model.Permissao;
-import com.barbearia.agendamento.model.Usuario;
-import com.barbearia.agendamento.repository.ClienteRepository;
-import com.barbearia.agendamento.repository.UsuarioRepository;
-import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.io.IOException;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+import com.barbearia.agendamento.auth.AuthService;
+import com.barbearia.agendamento.auth.SessaoService;
+import com.barbearia.agendamento.model.Permissao.TipoPermissao;
+import com.barbearia.agendamento.model.Usuario;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
+/**
+ * Depois do login Google: busca/cria o cliente e troca a autenticação OAuth2
+ * pela sessão padrão do app (mesmo formato do login por senha, com o perfil do banco).
+ */
 @Component
 public class OAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final AuthService authService;
+    private final SessaoService sessaoService;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    public OAuth2LoginSuccessHandler(AuthService authService, SessaoService sessaoService) {
+        this.authService = authService;
+        this.sessaoService = sessaoService;
+    }
 
     @Override
-    public void onAuthenticationSuccess(
-            jakarta.servlet.http.HttpServletRequest request,
-            jakarta.servlet.http.HttpServletResponse response,
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
             Authentication authentication) throws IOException {
 
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
-
         String email = token.getPrincipal().getAttribute("email");
         String nome = token.getPrincipal().getAttribute("name");
 
-        // =========================
-        // BUSCA OU CRIA CLIENTE
-        // =========================
+        if (email == null || email.isBlank()) {
+            response.sendRedirect("/#/entrar?erro=google");
+            return;
+        }
 
-        Cliente cliente = clienteRepository.findByEmailCliente(email)
-                .orElseGet(() -> {
-                    Cliente novoCliente = new Cliente();
-                    novoCliente.setNomeCliente(nome);
-                    novoCliente.setEmailCliente(email);
-                    novoCliente.setTelefoneCliente("00000000000");
-                    return clienteRepository.save(novoCliente);
-                });
+        Usuario usuario = authService.usuarioGoogle(email, nome);
+        sessaoService.abrirSessao(usuario, request, response);
 
-        // =========================
-        // BUSCA OU CRIA USUARIO
-        // =========================
-
-        Usuario usuario = usuarioRepository.findByEmailUsuario(email)
-                .orElseGet(() -> {
-
-                    Usuario novoUsuario = new Usuario();
-                    novoUsuario.setEmailUsuario(email);
-                    novoUsuario.setSenhaUsuario("GOOGLE_LOGIN");
-                    novoUsuario.setCliente(cliente);
-
-                    Permissao permissao = new Permissao();
-                    permissao.setIdPermissao(1); // Cliente
-
-                    novoUsuario.setPermissao(permissao);
-
-                    return usuarioRepository.save(novoUsuario);
-                });
-
-        // =========================
-        // SESSAO PADRONIZADA
-        // =========================
-
-        HttpSession session = request.getSession();
-        session.setAttribute("usuarioLogado", usuario);
-
-        response.sendRedirect("/barbearia/servicos");
+        boolean admin = usuario.getPermissao().getTipoPermissao() == TipoPermissao.ADMIN;
+        response.sendRedirect(admin ? "/#/admin" : "/#/inicio");
     }
 }

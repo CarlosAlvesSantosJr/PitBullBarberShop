@@ -6,6 +6,7 @@ import com.barbearia.agendamento.repository.UsuarioRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/** API de login por JWT: ativa só com o profile "jwt". */
+@Profile("jwt")
 @RestController
 @RequestMapping("/barbearia/api/auth")
 @Tag(name = "Autenticação JWT", description = "Endpoints de autenticação com JWT")
@@ -39,10 +42,10 @@ public class AuthController {
 
         Usuario usuario = usuarioOpt.get();
 
-        // Verifica senha (para login normal, não OAuth)
-        if (!usuario.getSenhaUsuario().equals("GOOGLE_LOGIN") && 
-            !passwordEncoder.matches(request.getSenha(), usuario.getSenhaUsuario())) {
-            return ResponseEntity.status(401).body(Map.of("error", "Senha incorreta"));
+        // Contas do Google não têm senha local: não podem obter token por aqui.
+        if ("GOOGLE_LOGIN".equals(usuario.getSenhaUsuario())
+                || !passwordEncoder.matches(request.getSenha(), usuario.getSenhaUsuario())) {
+            return ResponseEntity.status(401).body(Map.of("error", "E-mail ou senha incorretos"));
         }
 
         // Gera token JWT

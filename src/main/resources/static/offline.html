@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#120E0E" />
+  <title>Sem conexão · Pitbull Barber</title>
+  <style>
+    body { margin: 0; min-height: 100dvh; display: grid; place-items: center; padding: 24px 16px;
+      background: #0f0b0b; color: #f5efea; font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align: center; }
+    img { width: 112px; height: 112px; margin: 0 auto 16px; display: block; }
+    h1 { font-size: 1.4rem; margin: 0 0 8px; }
+    p { color: #c9beb8; margin: 0 0 24px; }
+    button { min-height: 48px; padding: 0 28px; border: 0; border-radius: 10px; background: #e0384d; color: #fff;
+      font-weight: 600; font-size: 1rem; cursor: pointer; }
+    button:focus-visible { outline: 3px solid rgba(224, 56, 77, .55); outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <main>
+    <img src="/imagens/logo.webp" alt="Pitbull Barber" width="112" height="112" />
+    <h1>Você está sem internet</h1>
+    <p>Assim que a conexão voltar, é só tentar de novo.</p>
+    <button onclick="location.reload()">Tentar novamente</button>
+  </main>
+</body>
+</html>

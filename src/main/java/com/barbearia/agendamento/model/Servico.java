@@ -25,6 +25,12 @@ public class Servico {
     @Column(nullable = false, length = 20)
     private Long duracaoCorte;
 
+    @Column(nullable = false, length = 30)
+    private String categoria;
+
+    @Column(length = 160)
+    private String descricao;
+
     public Servico() {
     }
 
@@ -65,6 +71,22 @@ public class Servico {
 
     public void setDuracaoCorte(Long duracaoCorte) {
         this.duracaoCorte = duracaoCorte;
+    }
+
+    public String getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(String categoria) {
+        this.categoria = categoria;
+    }
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
 }

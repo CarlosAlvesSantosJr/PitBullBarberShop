@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#120E0E" />
+  <meta name="description" content="Agende seu corte na Pitbull Barber em poucos toques." />
+  <title>Pitbull Barber</title>
+  <link rel="icon" type="image/png" href="/imagens/icon-192.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/imagens/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Pitbull Barber" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Oswald:wght@500;600;700&display=swap" />
+  <link rel="preload" as="image" href="/imagens/logo.webp" />
+  <link rel="stylesheet" href="/app/styles.css" />
+  <link rel="modulepreload" href="/app/main.js" />
+  <link rel="modulepreload" href="/app/api.js" />
+  <link rel="modulepreload" href="/app/ui.js" />
+</head>
+<body>
+  <a class="skip-link" href="#app">Pular para o conteúdo</a>
+  <div class="bg" aria-hidden="true"></div>
+
+  <main id="app" tabindex="-1">
+    <div class="boot" role="status" aria-live="polite">
+      <img src="/imagens/logo.webp" alt="" width="120" height="120" />
+      <span class="spinner" aria-hidden="true"></span>
+      <span class="sr-only">Carregando…</span>
+    </div>
+  </main>
+
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+
+  <div class="install" id="install" hidden>
+    <img src="/imagens/icon-192.png" alt="" width="40" height="40" />
+    <div class="install__text"><strong>Instale o app</strong><span>Agende mais rápido, direto da tela inicial.</span></div>
+    <button class="btn btn--primary btn--sm" id="install-ok">Instalar</button>
+    <button class="btn btn--quiet btn--icon btn--sm" id="install-fechar" aria-label="Agora não">&times;</button>
+  </div>
+
+  <dialog id="confirm" class="dialog" aria-labelledby="confirm-title" aria-describedby="confirm-text">
+    <form method="dialog" class="dialog__body">
+      <h2 id="confirm-title" class="dialog__title"></h2>
+      <p id="confirm-text" class="dialog__text"></p>
+      <div class="dialog__actions">
+        <button value="cancel" class="btn btn--ghost" id="confirm-cancel">Voltar</button>
+        <button value="ok" class="btn btn--primary" id="confirm-ok">Confirmar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <noscript>Ative o JavaScript para usar o agendamento da Pitbull Barber.</noscript>
+  <script type="module" src="/app/main.js"></script>
+</body>
+</html>
